@@ -52,7 +52,7 @@ app.post('/dbGet', jsonParser, async (req, res) => {
         } else {
             if (doc && doc._id) {
                 if (content) {
-                    doc.content = content
+                    doc.content = JSON.stringify(content)
                     await doc.save()
                 }
                 if (addEmail) {
@@ -83,6 +83,18 @@ app.post('/dbGet', jsonParser, async (req, res) => {
                     res.json({ error: "You don't have access to this page" })
                 })
             }
+        }
+    })
+})
+
+app.post('/myDocs', jsonParser, (req, res) => {
+    const email = req.body.email
+    Doc.find({ accessList: email }, (err, docs) => {
+        if (err) {
+            console.log(err)
+            res.status(500).json({ error: "Something went wrong" })
+        } else {
+            res.status(200).json(docs)
         }
     })
 })
