@@ -6,6 +6,11 @@ const docsSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    title: {
+        type: String,
+        required: true,
+        default: 'Untitled'
+    },
     content: {
         type: String
     },

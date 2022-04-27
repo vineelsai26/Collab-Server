@@ -22,17 +22,29 @@ mongoose.connect(process.env.MONGODB_DOCS, {}).then(() => {
     console.log(err)
 })
 
+const users = {}
+
 io.on('connection', (socket) => {
     const id = socket.handshake.query.id
     socket.join(id)
+    if (users[id]) {
+        users[id]++
+    } else {
+        users[id] = 1
+    }
     socket.on('send', ({ message }) => {
-        socket.to(id).emit('receive', { message })
+        socket.broadcast.to(id).emit('receive', { message: message, noOfUsers: users[id] })
     })
     socket.on('join', () => {
-        socket.to(id).emit('join')
+        socket.broadcast.to(id).emit('join')
     })
     socket.on('disconnect', () => {
-        socket.to(id).emit('userLeft')
+        if (users[id] > 1) {
+            users[id]--
+        } else {
+            delete users[id]
+        }
+        socket.to(id).emit('userLeft', { noOfUsers: users[id] })
     })
 })
 
@@ -45,6 +57,7 @@ app.post('/dbGet', jsonParser, async (req, res) => {
     const pageId = req.body.pageId
     const email = req.body.email
     const content = req.body.content
+    const title = req.body.title
     const addEmail = req.body.addEmail
     Doc.findOne({ id: pageId }, async (err, doc) => {
         if (err) {
@@ -53,6 +66,10 @@ app.post('/dbGet', jsonParser, async (req, res) => {
             if (doc && doc._id) {
                 if (content) {
                     doc.content = JSON.stringify(content)
+                    await doc.save()
+                }
+                if (title) {
+                    doc.title = title
                     await doc.save()
                 }
                 if (addEmail) {
