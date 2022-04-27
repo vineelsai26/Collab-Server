@@ -116,6 +116,18 @@ app.post('/myDocs', jsonParser, (req, res) => {
     })
 })
 
+app.post('/deleteDoc', jsonParser, (req, res) => {
+    const id = req.body.id
+    Doc.deleteOne({ id: id }, (err, docs) => {
+        if (err) {
+            console.log(err)
+            res.status(500).json({ error: "Something went wrong" })
+        } else {
+            res.status(200).json(docs)
+        }
+    })
+})
+
 server.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`)
 })
