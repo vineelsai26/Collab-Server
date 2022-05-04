@@ -53,6 +53,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const jsonParser = bodyParser.json()
 
 
+app.get('/', (req, res) => {
+    res.status(200).send('Server is running')
+})
+
 app.post('/dbGet', jsonParser, async (req, res) => {
     const pageId = req.body.pageId
     const email = req.body.email
