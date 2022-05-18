@@ -63,6 +63,7 @@ app.post('/dbGet', jsonParser, async (req, res) => {
     const content = req.body.content
     const title = req.body.title
     const addEmail = req.body.addEmail
+    const accessType = req.body.accessType
     Doc.findOne({ id: pageId }, async (err, doc) => {
         if (err) {
             console.log(err)
@@ -80,10 +81,14 @@ app.post('/dbGet', jsonParser, async (req, res) => {
                     doc.accessList = addEmail
                     await doc.save()
                 }
+                if (accessType) {
+                    doc.accessType = accessType
+                    await doc.save()
+                }
                 if (doc.accessType === 'public') {
                     res.json(doc)
                 } else {
-                    if (doc.accessList.includes(email)) {
+                    if (doc.accessList.includes(email) || doc.accessType === 'public') {
                         res.json(doc)
                     } else {
                         res.json({ error: "You don't have access to this page" })
@@ -93,7 +98,7 @@ app.post('/dbGet', jsonParser, async (req, res) => {
                 const newDoc = new Doc({
                     id: pageId,
                     content: "",
-                    contentType: "public",
+                    accessType: "public",
                     accessList: [email]
                 })
 

@@ -14,7 +14,7 @@ const docsSchema = new mongoose.Schema({
     content: {
         type: String
     },
-    contentType: {
+    accessType: {
         type: String,
         required: true,
         default: 'public'
