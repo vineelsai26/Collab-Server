@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
 const docsSchema = new mongoose.Schema({
     id: {
@@ -20,9 +20,9 @@ const docsSchema = new mongoose.Schema({
         default: 'public'
     },
     accessList: {
-        type: JSON,
+        type: Array,
         required: true
     },
 })
 
-module.exports = mongoose.model('Doc', docsSchema)
+export default mongoose.model('Doc', docsSchema)
