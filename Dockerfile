@@ -4,8 +4,11 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-RUN yarn install
 RUN npm install -g pm2
+RUN npm install -g pnpm
+
+RUN pnpm install
+RUN pnpm run build
 
 EXPOSE 7000
-CMD [ "pm2-runtime", "server.js" ]
+CMD [ "pm2-runtime", "dist/src/server.js" ]

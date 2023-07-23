@@ -7,7 +7,8 @@
     "tsc": "tsc",
     "watch": "tsc -w --outDir dist",
     "dev": "pnpm watch | nodemon --watch dist dist/src/server.js",
-    "start": "ts-node src/server.ts"
+    "start": "ts-node src/server.ts",
+    "build": "tsc --outDir dist"
   },
   "dependencies": {
     "body-parser": "^1.20.2",
