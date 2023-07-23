@@ -38,7 +38,7 @@ type User = {
     [key: string]: number
 }
 
-const users:User = {}
+const users: User = {}
 
 io.on('connection', (socket: Socket) => {
     const id = socket.handshake.query.id
@@ -48,7 +48,7 @@ io.on('connection', (socket: Socket) => {
     } else {
         users[id?.toString()!] = 1
     }
-    socket.on('send', ({ message, index }: {message: string, index: number}) => {
+    socket.on('send', ({ message, index }: { message: string, index: number }) => {
         socket.broadcast.to(id?.toString()!).emit('receive', { message: message, index: index })
     })
     socket.on('join', () => {
@@ -68,8 +68,7 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 const jsonParser = bodyParser.json()
 
-
-app.get('/', (req: Request, res: Response) => {
+app.get('/', (_: Request, res: Response) => {
     res.status(200).send('Server is running')
 })
 
@@ -118,7 +117,7 @@ app.post('/dbGet', jsonParser, async (req: Request, res: Response) => {
 
         await newDoc.save().then((data: any) => {
             res.json(data)
-        }).catch((err: any)=> {
+        }).catch((err: any) => {
             console.log(err)
             res.json({ error: "You don't have access to this page" })
         })
