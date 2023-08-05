@@ -83,6 +83,8 @@ const middleware = {
             const user = await getAuthInfo(id_token)
             if (user) {
                 req.body.email = user.email
+                req.body.name = user.name
+                req.body.picture = user.picture
                 next()
             } else {
                 res.status(401).json({ error: 'Unauthorized' })
@@ -93,6 +95,10 @@ const middleware = {
         }
     }
 }
+
+app.get('/me' , [middleware.getAuthInfo], async (req: Request, res: Response) => {
+    res.json(req.body)
+})
 
 app.get('/doc/:pageId', [middleware.jsonParser, middleware.getAuthInfo], async (req: Request, res: Response) => {
     const pageId = req.params.pageId
