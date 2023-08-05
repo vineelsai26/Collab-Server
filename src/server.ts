@@ -7,6 +7,8 @@ import cors from 'cors'
 import 'dotenv/config'
 import http from 'http'
 import Doc from '../models/Doc.js'
+import { OAuth2Client } from 'google-auth-library'
+import { randomUUID } from 'crypto'
 
 const app = express()
 
@@ -62,7 +64,70 @@ app.get('/', (_: Request, res: Response) => {
     res.status(200).send('Server is running')
 })
 
-app.post('/dbGet', jsonParser, async (req: Request, res: Response) => {
+async function getAuthInfo(id_token: string) {
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+    const res = await client.verifyIdToken({ idToken: id_token, audience: process.env.CLIENT_ID })
+    return res.getPayload()
+}
+
+const middleware = {
+    jsonParser: jsonParser,
+    getAuthInfo: async function (req: Request, res: Response, next: any) {
+        req.body.email = ''
+        try {
+            const id_token = req.headers.authorization?.split(' ')[1]
+            if (!id_token) {
+                res.status(401).json({ error: 'Unauthorized' })
+                return
+            }
+            const user = await getAuthInfo(id_token)
+            if (user) {
+                req.body.email = user.email
+                next()
+            } else {
+                res.status(401).json({ error: 'Unauthorized' })
+            }
+        } catch (err: any) {
+            console.error(err)
+            res.status(401).json({ error: 'Unauthorized' })
+        }
+    }
+}
+
+app.get('/doc/:pageId', [middleware.jsonParser, middleware.getAuthInfo], async (req: Request, res: Response) => {
+    const pageId = req.params.pageId
+    const doc = await Doc.findOne({ id: pageId })
+    const email = req.body.email
+
+    if (doc) {
+        if (doc.accessType === 'public') {
+            res.json(doc)
+        } else {
+            if (doc.accessList.includes(email)) {
+                res.json(doc)
+            } else {
+                res.json({ error: "You don't have access to this page" })
+            }
+        }
+    } else {
+        res.json({ error: "Page doesn't exist" })
+    }
+})
+
+app.post('/doc', [middleware.jsonParser, middleware.getAuthInfo], async (req: Request, res: Response) => {
+    const email = req.body.email
+    const newDoc = new Doc({
+        id: randomUUID(),
+        content: "",
+        accessType: "public",
+        accessList: [email]
+    })
+
+    const doc = await newDoc.save()
+    res.json(doc)
+})
+
+app.patch('/doc', [middleware.jsonParser, middleware.getAuthInfo], async (req: Request, res: Response) => {
     const pageId = req.body.pageId
     const email = req.body.email
     const content = req.body.content
@@ -98,29 +163,17 @@ app.post('/dbGet', jsonParser, async (req: Request, res: Response) => {
             }
         }
     } else {
-        const newDoc = new Doc({
-            id: pageId,
-            content: "",
-            accessType: "public",
-            accessList: [email]
-        })
-
-        await newDoc.save().then((data: any) => {
-            res.json(data)
-        }).catch((err: any) => {
-            console.log(err)
-            res.json({ error: "You don't have access to this page" })
-        })
+        res.json({ error: "Page doesn't exist" })
     }
 })
 
-app.post('/myDocs', jsonParser, async (req: Request, res: Response) => {
+app.get('/docs/me', [middleware.getAuthInfo], async (req: Request, res: Response) => {
     const email = req.body.email
     const docs = await Doc.find({ accessList: email })
     res.status(200).json(docs)
 })
 
-app.post('/deleteDoc', jsonParser, (req: Request, res: Response) => {
+app.delete('/doc', [middleware.jsonParser, middleware.getAuthInfo], (req: Request, res: Response) => {
     const id = req.body.id
     Doc.deleteOne({ id: id }, (err: any, docs: any) => {
         if (err) {
