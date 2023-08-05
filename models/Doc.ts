@@ -12,7 +12,8 @@ const docsSchema = new mongoose.Schema({
         default: 'Untitled'
     },
     content: {
-        type: String
+        type: String,
+        default: ''
     },
     accessType: {
         type: String,

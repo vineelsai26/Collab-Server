@@ -34,33 +34,23 @@ try {
     process.exit(1)
 }
 
-type User = {
-    [key: string]: number
-}
-
-const users: User = {}
-
 io.on('connection', (socket: Socket) => {
     const id = socket.handshake.query.id
     socket.join(id!)
-    if (users[id?.toString()!]) {
-        users[id?.toString()!]++
-    } else {
-        users[id?.toString()!] = 1
-    }
-    socket.on('send', ({ message, index }: { message: string, index: number }) => {
-        socket.broadcast.to(id?.toString()!).emit('receive', { message: message, index: index })
+    socket.on('send', ({ message, index, length }: { message: string, index: number, length: number }) => {
+        socket.broadcast.to(id?.toString()!).emit('receive', { message: message, index: index, length: length })
+    })
+    socket.on('send_hash', ({ hash, index, length }: { hash: string, index: number, length: number }) => {
+        socket.broadcast.to(id?.toString()!).emit('receive_hash', { hash: hash, index: index, length: length })
+    })
+    socket.on('request', ({ hash, index }) => {
+        socket.broadcast.to(id?.toString()!).emit('requested_lines', { hash: hash, index: index })
+    })
+    socket.on('title', (title: string) => {
+        socket.broadcast.to(id?.toString()!).emit('title', title)
     })
     socket.on('join', () => {
         socket.broadcast.to(id?.toString()!).emit('join')
-    })
-    socket.on('disconnect', () => {
-        if (users[id?.toString()!] > 1) {
-            users[id?.toString()!]--
-        } else {
-            delete users[id?.toString()!]
-        }
-        socket.to(id?.toString()!).emit('userLeft', { noOfUsers: users[id?.toString()!] })
     })
 })
 
@@ -83,7 +73,7 @@ app.post('/dbGet', jsonParser, async (req: Request, res: Response) => {
 
     if (doc && doc._id) {
         if (content) {
-            doc.content = JSON.stringify(content)
+            doc.content = content
             await doc.save()
         }
         if (title) {
