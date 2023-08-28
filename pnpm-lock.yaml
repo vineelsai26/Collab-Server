@@ -21,8 +21,8 @@ dependencies:
     specifier: ^9.0.0
     version: 9.0.0
   mongoose:
-    specifier: ^7.4.3
-    version: 7.4.3
+    specifier: ^7.4.5
+    version: 7.4.5
   socket.io:
     specifier: ^4.7.2
     version: 4.7.2
@@ -785,8 +785,8 @@ packages:
       saslprep: 1.0.3
     dev: false
 
-  /mongoose@7.4.3:
-    resolution: {integrity: sha512-eok0lW6mZJHK2vVSWyJb9tUfPMUuRF3h7YC4pU2K2/YSZBlNDUwvKsHgftMOANbokP2Ry+4ylvzAdW4KjkRFjw==}
+  /mongoose@7.4.5:
+    resolution: {integrity: sha512-X7Mw7KHUYZmyOQmlu7D9TnZh/3vOrAYmZwEpXDU0VDvLPKT0T7PF6blwiv3aXOEMwv9T3rLTC9lJb3C5dWld2A==}
     engines: {node: '>=14.20.1'}
     dependencies:
       bson: 5.4.0
