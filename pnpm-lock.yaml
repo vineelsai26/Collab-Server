@@ -41,8 +41,8 @@ devDependencies:
     specifier: ^20.12.7
     version: 20.12.7
   nodemon:
-    specifier: ^3.1.0
-    version: 3.1.0
+    specifier: ^3.1.3
+    version: 3.1.3
   typescript:
     specifier: ^5.4.5
     version: 5.4.5
@@ -822,8 +822,8 @@ packages:
       whatwg-url: 5.0.0
     dev: false
 
-  /nodemon@3.1.0:
-    resolution: {integrity: sha512-xqlktYlDMCepBJd43ZQhjWwMw2obW/JRvkrLxq5RCNcuDDX1DbcPT+qT1IlIIdf+DhnWs90JpTMe+Y5KxOchvA==}
+  /nodemon@3.1.3:
+    resolution: {integrity: sha512-m4Vqs+APdKzDFpuaL9F9EVOF85+h070FnkHVEoU4+rmT6Vw0bmNl7s61VEkY/cJkL7RCv1p4urnUDUMrS5rk2w==}
     engines: {node: '>=10'}
     hasBin: true
     dependencies:
