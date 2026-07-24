@@ -1,5 +1,5 @@
 {
-  "name": "chat",
+  "name": "@vstack/collab-server",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -8,7 +8,8 @@
     "watch": "tsc -w --outDir dist",
     "dev": "pnpm watch | nodemon --watch dist dist/src/server.js",
     "start": "ts-node src/server.ts",
-    "build": "tsc --outDir dist"
+    "build": "tsc --outDir dist",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "body-parser": "^1.20.2",
@@ -16,7 +17,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "google-auth-library": "^9.13.0",
-    "mongoose": "^8.5.3",
+    "mongoose": "^8.9.5",
     "socket.io": "^4.7.5"
   },
   "devDependencies": {
